@@ -1,0 +1,100 @@
+class contact:
+    def __init__(self, name,
+                 phone, email):
+        self.name = name
+        self.phone = phone
+        self.email = email
+    def print(self):
+        return self.name,self.phone,self.email
+
+def buildGraph(arr, n, mat):
+    for i in range(n):
+        for j in range(n):
+            mat[i][j] = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            if (arr[i].name == arr[j].name or
+                    arr[i].name == arr[j].phone or
+                    arr[i].name == arr[j].email or
+                    arr[i].phone == arr[j].name or
+                    arr[i].phone == arr[j].phone or
+                    arr[i].phone == arr[j].email or
+                    arr[i].email == arr[j].name or
+                    arr[i].email == arr[j].phone or
+                    arr[i].email == arr[j].email):
+                mat[i][j] = 1
+                mat[j][i] = 1
+                break
+
+def DFSvisit(i, mat, visited, sol, n):
+    visited[i] = True
+    sol.append(i)
+    for j in range(n):
+        if (mat[i][j] and not visited[j]):
+            DFSvisit(j, mat, visited, sol, n)
+
+def findSameContacts(arr, n):
+    sol = []
+    mat = [[None] * n for i in range(n)]
+    visited = [0] * n
+   buildGraph(arr, n, mat)
+    result=[[]]
+    counter=0
+    for i in range(n):
+        if (not visited[i]):
+            DFSvisit(i, mat, visited, sol, n)
+            sol.append(-1)
+
+    for i in range(len(sol)-1):
+        if sol[i]==-1:
+            result.append([])
+        else:
+            result[-1].append(arr[sol[i]])
+
+    return result
+
+if __name__ == '__main__':
+    arr = [contact('Mr. X', '123-456-7890','x@yieldmo.com'),
+    contact('Ms. Y', '456-789-1234','y@yieldmo.com'),
+    contact('Mr. X1','123-456-7890','x@gmail.com'),
+    contact('Ms. Y1','456-789-9999','y@yieldmo.com')]
+    n = len(arr)
+    result=findSameContacts(arr, n)
+    print(result)
+ 
+ 
+def doesWordExist(grid, word):
+    grid=[list(word) for word in grid]
+    def isValid(indicies):
+        i, j = indicies
+        return i >= 0 and i < len(grid) and j >= 0 and j < len(grid[0])
+
+    def dfs(indicies, seen, word):
+        if len(word) == 0:
+            return True
+        i, j = indicies
+        if isValid(indicies) and grid[i][j] == word[0] and indicies not in seen:
+            seen.add(indicies)
+            if (dfs((i + 1, j), seen, word[1:]) or
+                    dfs((i - 1, j), seen, word[1:]) or
+                    dfs((i, j + 1), seen, word[1:]) or
+                    dfs((i, j - 1), seen, word[1:])):
+                return True
+            else:
+                seen.remove(indicies)
+        return False
+
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            seen = set()
+            if dfs((i, j), seen, word):
+                return True
+    return False
+
+
+if __name__ == '__main__':
+    grid = ['acdef', 'ghije', 'mopqu', 'swtuv']
+    print(doesWordExist(grid, 'how'))
+    print(doesWordExist(grid, 'vue'))
+    print(doesWordExist(grid, 'mope'))
+ 
