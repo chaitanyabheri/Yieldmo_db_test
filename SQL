@@ -1,0 +1,98 @@
+
+/** question 1 **/
+
+CREATE TABLE  IF NOT EXISTS user
+(User_ID INT NOT   null AUTO_INCREMENT,
+ Login_ID VARCHAR(255)  ,
+ Email VARCHAR(255),
+ Full_name VARCHAR(255),
+ Create_date TIMESTAMP,
+ PRIMARY KEY (User_ID)
+);
+
+create table IF NOT EXISTS product
+(product_id INT , 
+product_name varchar(255),
+product__description varchar(255)
+ );
+ 
+ create table  if not exists subscription
+ (subscription_id INT  ,
+User_ID INT,
+product_id int,
+  subscription_startdate timestamp,
+  susbcription_enddate timestamp);
+  
+
+SELECT 
+u.Full_name
+from 
+subscription s
+join 
+product p 
+  on p.product_id = s.product_id 
+join 
+user u 
+  on u.User_ID = s.User_ID 
+where 
+  subscription_startdate between '2018-09-01' and '2018-12-31'
+  and susbcription_enddate <NOW();
+ 
+
+/***Question 2 
+
+set @st_time   = '2019-02-01 09:15:00';
+set @end_time =  '2019-02-01 10:15:00';
+
+create table if not exists login_event (
+session_id int ,
+event_time timestamp ,
+event_type varchar(255),
+user_id int );
+
+truncate table login_event;
+
+insert into login_event 
+(session_id, event_time, event_type, user_id)
+values 
+(1, '2019/02/01 9:00','login', 1),
+(2, '2019/02/01 9:30','login', 2),
+(1, '2019/02/01 10:00','logout', 1),
+(3, '2019/02/01 10:00','login', 3),
+(3, '2019/02/02 11:15','logout', 3);
+
+ 
+
+ 
+select 
+li.user_id,#li.session_id,
+                                                                    
+1000*SUM(TIME_TO_SEC(TIMEDIFF (
+            #as st_time,
+            (CASE WHEN IFNULL(lo.event_time,'2019-02-01 10:20:00') > @end_time THEN @end_time
+             ELSE lo.event_time END
+             ),#as end_time
+            (CASE WHEN lo.event_time < @st_time THEN 0 
+                  WHEN li.event_time < @st_time THEN @st_time
+                  else li.event_time end 
+             )
+                    )
+            )
+    )/3600 
+    as cost
+from
+login_event li
+left join 
+login_event lo
+    on li.user_id = lo.user_id
+    and li.session_id = lo.session_id
+    and lo.event_type = 'logout'
+where 
+    li.event_time <= @end_time
+   and li.event_type = 'login'
+   group by li.user_id
+
+
+
+
+**/
